@@ -1,25 +1,39 @@
 using System.Text.Json.Serialization;
+using ConcertTicketAPI;
 using ConcertTicketAPI.Converter;
 using ConcertTicketAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Default App Token
-var bossToken = builder.Configuration.GetSection("Auth")["BossToken"];
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
 
 builder.Services.AddAuthentication(o =>
-{
-    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-});
-// .AddJwtBearer();
+    {
+        o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidIssuer = TestDevAuthOptions.Issuer,
+            ValidateAudience = false,
+            ValidAudience = TestDevAuthOptions.Audience,
+            ValidateLifetime = false,
+            RequireSignedTokens = false,
+            IssuerSigningKey = TestDevAuthOptions.GetSymmetricSecurityKey(),
+            ValidateIssuerSigningKey = false,
+            ValidateActor = false,
+        };
+    });
+
 
 builder.Services
     .AddDbContext<ApplicationDbContext>(options =>
@@ -28,8 +42,9 @@ builder.Services
 builder.Services.AddControllers()
     .AddJsonOptions(o =>
     {
-        var enumConverter = new JsonStringEnumConverter();
-        o.JsonSerializerOptions.Converters.Add(enumConverter);
+        // var enumConverter = new JsonStringEnumConverter();
+        // o.JsonSerializerOptions.Converters.Add(enumConverter);
+
         o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         o.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
         o.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
@@ -47,6 +62,7 @@ app.UseStaticFiles();
 app.UseCors(cors =>
 {
     cors.AllowAnyHeader();
+    cors.WithMethods(HttpMethod.Put.Method, HttpMethod.Delete.Method, HttpMethod.Patch.Method);
     cors.WithOrigins("http://localhost:3000", "http://localhost:4200");
 });
 
@@ -59,19 +75,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
-// Check Default App Token
-app.Use(async (context, next) =>
-{
-    if (bossToken != context.Request.Headers["Token"])
-    {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-    }
-    else
-    {
-        await next();
-    }
-});
 
 app.UseAuthentication();
 app.UseAuthorization();

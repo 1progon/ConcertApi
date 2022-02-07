@@ -6,12 +6,13 @@ namespace ConcertTicketAPI.Models.Person;
 
 public class Person : AccountBase
 {
-    public override int Id { get; set; }
+
+    // public override int Id { get; set; }
     [Column(TypeName = "varchar(255)")] public string? FirstName { get; set; }
     [Column(TypeName = "varchar(255)")] public string? LastName { get; set; }
     [Column(TypeName = "varchar(255)")] public string? MiddleName { get; set; }
 
-    public PersonType Type { get; set; }
+    public PersonType Type { get; set; } = PersonType.User;
     [NotMapped] public bool IsAdmin => Type == PersonType.Admin;
 
     public GenderType Gender { get; set; }

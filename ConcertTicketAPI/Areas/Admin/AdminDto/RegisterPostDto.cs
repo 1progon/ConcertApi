@@ -1,10 +1,9 @@
 using ConcertTicketAPI.Models.Enums;
-using ConcertTicketAPI.Models.Location;
 using Microsoft.Build.Framework;
 
-namespace ConcertTicketAPI.Areas.Admin.AdminModels;
+namespace ConcertTicketAPI.Areas.Admin.AdminDto;
 
-public class RegisterModel
+public class RegisterPostDto
 {
     [Required] public string Email { get; set; } = null!;
     [Required] public string Password { get; set; } = null!;

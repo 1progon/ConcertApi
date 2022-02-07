@@ -13,9 +13,10 @@ public abstract class AccountBase
     private string? _zipCode;
 
     [Key] public virtual int Id { get; set; }
+    public Guid Guid { get; set; }
 
     [Required] public bool Active { get; set; }
-    [Required] public AccountStatus Status { get; set; }
+    [Required] public AccountStatus Status { get; set; } = AccountStatus.Moderation;
 
     [Required]
     [Column(TypeName = "varchar(255)")]

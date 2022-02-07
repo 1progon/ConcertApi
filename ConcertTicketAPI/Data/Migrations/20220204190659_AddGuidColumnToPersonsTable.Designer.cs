@@ -3,6 +3,7 @@ using System;
 using ConcertTicketAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,10 @@ using NpgsqlTypes;
 namespace ConcertTicketAPI.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220204190659_AddGuidColumnToPersonsTable")]
+    partial class AddGuidColumnToPersonsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,7 +100,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("VenueId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Event.EventCategory", b =>
@@ -137,7 +139,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("EventCategories", (string)null);
+                    b.ToTable("EventCategories");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Event.EventImages", b =>
@@ -166,7 +168,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("EventImages", (string)null);
+                    b.ToTable("EventImages");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Event.EventsLike", b =>
@@ -184,7 +186,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("EventLikes", (string)null);
+                    b.ToTable("EventLikes");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Event.EventsTag", b =>
@@ -220,7 +222,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("EventsTags", (string)null);
+                    b.ToTable("EventsTags");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Event.EventSubCategory", b =>
@@ -258,7 +260,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("EventSubCategories", (string)null);
+                    b.ToTable("EventSubCategories");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Location.LocationCity", b =>
@@ -316,7 +318,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("TimeZoneId");
 
-                    b.ToTable("LocationCities", (string)null);
+                    b.ToTable("LocationCities");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Location.LocationCountry", b =>
@@ -358,7 +360,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("LocationCountries", (string)null);
+                    b.ToTable("LocationCountries");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Location.LocationState", b =>
@@ -402,7 +404,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("LocationStates", (string)null);
+                    b.ToTable("LocationStates");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Location.TimeZone", b =>
@@ -453,7 +455,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("TimeZones", (string)null);
+                    b.ToTable("TimeZones");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Middle.EventPerformerMiddle", b =>
@@ -468,7 +470,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PerformerId");
 
-                    b.ToTable("EventPerformerMiddle", (string)null);
+                    b.ToTable("EventPerformerMiddle");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Middle.EventTagMiddle", b =>
@@ -483,7 +485,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("EventTagMiddle", (string)null);
+                    b.ToTable("EventTagMiddle");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Middle.PersonEventFavoritesMiddle", b =>
@@ -498,7 +500,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("PersonEventFavoritesMiddle", (string)null);
+                    b.ToTable("PersonEventFavoritesMiddle");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Middle.PersonEventFollowingsMiddle", b =>
@@ -513,7 +515,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("PersonEventFollowingsMiddle", (string)null);
+                    b.ToTable("PersonEventFollowingsMiddle");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Middle.PersonPerformerFavoritesMiddle", b =>
@@ -528,7 +530,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PerformerId");
 
-                    b.ToTable("PersonPerformerFavoritesMiddle", (string)null);
+                    b.ToTable("PersonPerformerFavoritesMiddle");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Middle.PersonPerformerFollowingMiddle", b =>
@@ -543,7 +545,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PerformerId");
 
-                    b.ToTable("PersonPerformerFollowingMiddle", (string)null);
+                    b.ToTable("PersonPerformerFollowingMiddle");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Performer.Performer", b =>
@@ -604,7 +606,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Performers", (string)null);
+                    b.ToTable("Performers");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Performer.PerformerCategory", b =>
@@ -643,7 +645,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("PerformerCategories", (string)null);
+                    b.ToTable("PerformerCategories");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Performer.PerformerImages", b =>
@@ -672,7 +674,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PerformerId");
 
-                    b.ToTable("PerformerImages", (string)null);
+                    b.ToTable("PerformerImages");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Performer.PerformerSubCategory", b =>
@@ -710,7 +712,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("PerformerSubCategories", (string)null);
+                    b.ToTable("PerformerSubCategories");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Person.Person", b =>
@@ -818,7 +820,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("StateId");
 
-                    b.ToTable("Persons", (string)null);
+                    b.ToTable("Persons");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Person.PersonCompanies", b =>
@@ -849,7 +851,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("PersonCompanies", (string)null);
+                    b.ToTable("PersonCompanies");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Person.PersonCompaniesImages", b =>
@@ -878,7 +880,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("PersonCompaniesId");
 
-                    b.ToTable("PersonCompaniesImages", (string)null);
+                    b.ToTable("PersonCompaniesImages");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Phone.CountryPhoneCode", b =>
@@ -904,7 +906,7 @@ namespace ConcertTicketAPI.Data.Migrations
                     b.HasIndex("CountryId")
                         .IsUnique();
 
-                    b.ToTable("PhoneCodesCountries", (string)null);
+                    b.ToTable("PhoneCodesCountries");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Venue.Venue", b =>
@@ -1013,7 +1015,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("StateId");
 
-                    b.ToTable("Venues", (string)null);
+                    b.ToTable("Venues");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Venue.VenueImages", b =>
@@ -1039,7 +1041,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("VenueId");
 
-                    b.ToTable("VenueImages", (string)null);
+                    b.ToTable("VenueImages");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Venue.VenueParking", b =>
@@ -1096,7 +1098,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("VenueId");
 
-                    b.ToTable("Parking", (string)null);
+                    b.ToTable("Parking");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Venue.VenueTicket", b =>
@@ -1156,7 +1158,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("VenueZonesId");
 
-                    b.ToTable("Tickets", (string)null);
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Venue.VenueWorkTime", b =>
@@ -1183,7 +1185,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("VenueId");
 
-                    b.ToTable("VenueWorkTimes", (string)null);
+                    b.ToTable("VenueWorkTimes");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Venue.VenueZones", b =>
@@ -1217,7 +1219,7 @@ namespace ConcertTicketAPI.Data.Migrations
 
                     b.HasIndex("VenueId");
 
-                    b.ToTable("VenueZones", (string)null);
+                    b.ToTable("VenueZones");
                 });
 
             modelBuilder.Entity("ConcertTicketAPI.Models.Event.Event", b =>

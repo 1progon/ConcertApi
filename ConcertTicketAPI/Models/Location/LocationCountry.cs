@@ -6,6 +6,7 @@ namespace ConcertTicketAPI.Models.Location;
 
 public class LocationCountry : BaseModel
 {
+    public override int Id { get; set; }
     private string? _shortName;
     public string? Description { get; set; }
 
