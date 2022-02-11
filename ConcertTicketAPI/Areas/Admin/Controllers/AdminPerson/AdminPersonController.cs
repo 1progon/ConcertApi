@@ -1,9 +1,11 @@
 #nullable disable
-using System.Security.Cryptography;
-using System.Text;
+using System.Security.Claims;
 using ConcertTicketAPI.Data;
 using ConcertTicketAPI.Dto;
+using ConcertTicketAPI.Models.Enums;
 using ConcertTicketAPI.Models.Person;
+using ConcertTicketAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,8 +17,13 @@ namespace ConcertTicketAPI.Areas.Admin.Controllers.AdminPerson;
 public class AdminPersonController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly TokenService _tokenService;
 
-    public AdminPersonController(ApplicationDbContext context) => _context = context;
+    public AdminPersonController(ApplicationDbContext context, TokenService tokenService)
+    {
+        _context = context;
+        _tokenService = tokenService;
+    }
 
 
     // GET: api/Admin/Person
@@ -37,10 +44,43 @@ public class AdminPersonController : ControllerBase
         return person;
     }
 
+
+    // Get: api/Admin/Person/guid
+    [HttpGet("{guid:guid}")]
+    public async Task<ActionResult<PersonShortDto>> GetPersonShortByGuid(Guid guid)
+    {
+        var person = await _context
+            .Persons
+            .SingleOrDefaultAsync(p => p.Guid == guid);
+
+        if (person == null) return NotFound();
+
+        var jwtToken = _tokenService.GenerateJwtToken(person, out var expires);
+
+
+        return new PersonShortDto
+        {
+            Guid = person.Guid,
+            AccessToken = jwtToken,
+            RefreshToken = person.RefreshToken ?? string.Empty,
+            Email = person.Email,
+            FirstName = person.FirstName,
+            LastName = person.LastName,
+            Type = person.Type
+        };
+    }
+
+    [Authorize]
     // PUT: api/Admin/Person/email
     [HttpPut("{guid:guid}")]
     public async Task<IActionResult> PutPerson([FromRoute] Guid guid, [FromBody] PersonShortDto personDto)
     {
+        if (guid.ToString() != User.Claims
+                .First(c => c.Type == ClaimTypes.NameIdentifier).Value)
+        {
+            return BadRequest();
+        }
+        
         if (guid != personDto.Guid) return BadRequest();
 
         var person = await _context
@@ -49,11 +89,11 @@ public class AdminPersonController : ControllerBase
             );
 
         if (person == null) return BadRequest();
-        
-        if (personDto.Token != person.Token)
-        {
-            return Unauthorized();
-        }
+
+        // if (personDto.Token != person.Token)
+        // {
+        //     return Unauthorized();
+        // }
 
         person.Email = personDto.Email;
         person.FirstName = personDto.FirstName;

@@ -44,6 +44,9 @@ namespace ConcertTicketAPI.Controllers.Events
         {
             var @event = await _context
                 .Events
+                .Include(e => e.Venue)
+                .Include(e => e.SubCategory)
+                .ThenInclude(sc => sc.Category)
                 .Where(e => e.Slug == slug)
                 .FirstOrDefaultAsync();
 

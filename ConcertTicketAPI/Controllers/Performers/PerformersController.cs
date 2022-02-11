@@ -1,14 +1,10 @@
 #nullable disable
-using System.IdentityModel.Tokens.Jwt;
 using ConcertTicketAPI.Data;
 using ConcertTicketAPI.Dto;
 using ConcertTicketAPI.Models.Enums;
 using ConcertTicketAPI.Models.Performer;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace ConcertTicketAPI.Controllers.Performers
 {

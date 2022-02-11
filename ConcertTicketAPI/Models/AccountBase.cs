@@ -26,8 +26,7 @@ public abstract class AccountBase
     [Column(TypeName = "varchar(255)")]
     public string Password { get; set; } = null!;
 
-    [Column(TypeName = "varchar(255)")] public string? Token { get; set; }
-
+    [Column(TypeName = "varchar(255)")] public string? RefreshToken { get; set; }
 
     public DateTime? TokenExpire { get; set; }
 

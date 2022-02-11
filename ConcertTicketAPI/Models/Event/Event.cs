@@ -19,6 +19,8 @@ public class Event : BaseModel
     public TimeOnly Time { get; set; }
 
     public List<Performer.Performer>? Performers { get; set; }
+    
+    public string? Image { get; set; }
 
 
     [Required] public bool Active { get; set; }

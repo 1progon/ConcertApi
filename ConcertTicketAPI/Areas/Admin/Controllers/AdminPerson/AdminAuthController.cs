@@ -1,5 +1,7 @@
 using System.ComponentModel;
-using System.Security.Cryptography;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using ConcertTicketAPI.Areas.Admin.AdminDto;
 using ConcertTicketAPI.Data;
 using ConcertTicketAPI.Dto;
@@ -10,6 +12,7 @@ using ConcertTicketAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Extensions;
 
 namespace ConcertTicketAPI.Areas.Admin.Controllers.AdminPerson;
@@ -20,12 +23,18 @@ namespace ConcertTicketAPI.Areas.Admin.Controllers.AdminPerson;
 public class AdminAuthController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly TokenService _tokenService;
 
-    public AdminAuthController(ApplicationDbContext context) => _context = context;
+    public AdminAuthController(ApplicationDbContext context, TokenService tokenService)
+    {
+        _context = context;
+        _tokenService = tokenService;
+    }
+
 
     // POST: api/Admin/Person/Login
     [HttpPost("Login")]
-    public async Task<ActionResult<PersonShortDto>> Login([FromBody] LoginDto loginDto)
+    public async Task<ActionResult<PersonTokenDto>> Login([FromBody] LoginDto loginDto)
     {
         if (!ModelState.IsValid) return BadRequest(loginDto);
 
@@ -41,24 +50,32 @@ public class AdminAuthController : ControllerBase
             return Unauthorized(new ErrorDto {Error = "Have you forgotten your password?"});
 
 
-        var token = TokenService.GenerateBase64UrlToken();
+        // Generate refresh token
+        var refreshToken = TokenService.GenerateRandomBase64Url();
+        person.RefreshToken = refreshToken;
+        person.TokenExpire = DateTime.UtcNow.Add(TimeSpan.FromHours(5));
 
-        person.Token = token;
-        person.TokenExpire = DateTime.UtcNow + TimeSpan.FromMinutes(10);
+        try
+        {
+            _context.Persons.Update(person);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException e)
+        {
+            return Problem(
+                statusCode: 500,
+                title: "Saving DB error",
+                detail: e.InnerException?.Message
+            );
+        }
 
-        _context.Persons.Update(person);
-        await _context.SaveChangesAsync();
 
-
-        return new PersonShortDto
+        return new PersonTokenDto()
         {
             Guid = person.Guid,
-            Email = person.Email,
-            Token = person.Token,
-            TokenExpire = person.TokenExpire,
-            Type = person.Type,
-            FirstName = person.FirstName,
-            LastName = person.LastName,
+            AccessToken = _tokenService.GenerateJwtToken(person, out var expires),
+            RefreshToken = person.RefreshToken,
+            AccessTokenExpire = expires
         };
     }
 
@@ -123,7 +140,7 @@ public class AdminAuthController : ControllerBase
 
     // POST: api/Admin/Person/Register
     [HttpPost("Register")]
-    public async Task<ActionResult<PersonShortDto>>
+    public async Task<ActionResult<PersonTokenDto>>
         Register([FromBody] RegisterPostDto registerPostDto)
     {
         var checkPersonInDb = await _context
@@ -167,11 +184,10 @@ public class AdminAuthController : ControllerBase
         // hash password
         person.Password = ps.HashPassword(person, registerPostDto.Password);
 
-        // generate token
-        var token = TokenService.GenerateBase64UrlToken();
-
-        person.Token = token;
-        person.TokenExpire = DateTime.UtcNow + TimeSpan.FromMinutes(10);
+        // Generate refresh token
+        var refreshToken = TokenService.GenerateRandomBase64Url();
+        person.RefreshToken = refreshToken;
+        person.TokenExpire = DateTime.UtcNow.Add(TimeSpan.FromHours(10));
 
 
         try
@@ -180,15 +196,12 @@ public class AdminAuthController : ControllerBase
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
 
-            return new PersonShortDto
+            return new PersonTokenDto()
             {
                 Guid = person.Guid,
-                Email = person.Email,
-                Token = person.Token,
-                TokenExpire = person.TokenExpire,
-                Type = person.Type,
-                FirstName = person.FirstName,
-                LastName = person.LastName,
+                AccessToken = _tokenService.GenerateJwtToken(person, out var expires),
+                RefreshToken = person.RefreshToken,
+                AccessTokenExpire = expires
             };
         }
         catch (Exception e)

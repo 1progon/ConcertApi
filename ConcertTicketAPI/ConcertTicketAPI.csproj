@@ -24,6 +24,7 @@
       <Folder Include="Areas\Admin\Controllers\AdminLocations" />
       <Folder Include="Controllers\Venues" />
       <Folder Include="Data\Migrations" />
+      <Folder Include="Token" />
     </ItemGroup>
 
 </Project>

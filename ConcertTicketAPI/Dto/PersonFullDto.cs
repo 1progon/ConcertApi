@@ -7,7 +7,7 @@ using ConcertTicketAPI.Models.Venue;
 
 namespace ConcertTicketAPI.Dto;
 
-public class PersonDto : PersonShortDto
+public class PersonFullDto : PersonShortDto
 {
     public string? MiddleName { get; set; }
 

@@ -1,7 +1,8 @@
+using System.Text;
 using System.Text.Json.Serialization;
-using ConcertTicketAPI;
 using ConcertTicketAPI.Converter;
 using ConcertTicketAPI.Data;
+using ConcertTicketAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var jwtSection = builder.Configuration.GetSection("Jwt");
 
 // Add services to the container.
 
@@ -20,17 +22,18 @@ builder.Services.AddAuthentication(o =>
     })
     .AddJwtBearer(o =>
     {
-        o.TokenValidationParameters = new TokenValidationParameters
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt")["Key"]));
+
+        o.TokenValidationParameters = new TokenValidationParameters()
         {
-            ValidateIssuer = false,
-            ValidIssuer = TestDevAuthOptions.Issuer,
-            ValidateAudience = false,
-            ValidAudience = TestDevAuthOptions.Audience,
-            ValidateLifetime = false,
-            RequireSignedTokens = false,
-            IssuerSigningKey = TestDevAuthOptions.GetSymmetricSecurityKey(),
-            ValidateIssuerSigningKey = false,
-            ValidateActor = false,
+            ValidateIssuer = true,
+            ValidIssuer = jwtSection["Issuer"],
+            ValidateAudience = true,
+            ValidAudience = jwtSection["Audience"],
+            ValidateLifetime = true,
+            IssuerSigningKey = key,
+            ValidateIssuerSigningKey = true,
         };
     });
 
@@ -49,6 +52,9 @@ builder.Services.AddControllers()
         o.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
         o.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
     });
+
+
+builder.Services.AddTransient<TokenService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -81,6 +87,8 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+
+
 
 
 app.Run();

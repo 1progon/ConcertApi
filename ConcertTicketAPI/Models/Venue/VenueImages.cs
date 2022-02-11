@@ -9,5 +9,5 @@ public class VenueImages
     [Required] public string Folder { get; set; } = null!;
 
     [Required] public int VenueId { get; set; }
-    [Required] public Models.Venue.Venue Venue { get; set; } = null!;
+    [Required] public Venue Venue { get; set; } = null!;
 }
